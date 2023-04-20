@@ -164,3 +164,103 @@ StyleSheet(MixinStatement(mixin,CallExpression(Callee,ArgList(SassVariableName,S
   WhileStatement(ControlKeyword,
     BinaryExpression(BinaryExpression(SassVariableName,LogicOp,SassVariableName),BinOp,NumberLiteral),
     Block(Declaration(SassVariableName,NumberLiteral))),OutputStatement(ControlKeyword,SassVariableName))))
+
+# Indented {"dialect": "indented"}
+
+@mixin button-base()
+  @include typography(button)
+  @include ripple-surface
+  @include ripple-radius-bounded
+
+  display: inline-flex
+  position: relative
+  height: $button-height
+  border: none
+  vertical-align: middle
+
+  &:hover
+    cursor: pointer
+
+  &:disabled
+    color: $mdc-button-disabled-ink-color
+    cursor: default
+    pointer-events: none
+
+$i: 0
+
+==>
+
+StyleSheet(
+  MixinStatement(mixin,CallExpression(Callee,ArgList),Block(
+    IncludeStatement(include,CallExpression(Callee,ArgList(ValueName))),
+    IncludeStatement(include,ValueName),
+    IncludeStatement(include,ValueName),
+    Declaration(PropertyName,ValueName),
+    Declaration(PropertyName,ValueName),
+    Declaration(PropertyName,SassVariableName),
+    Declaration(PropertyName,ValueName),
+    Declaration(PropertyName,ValueName),
+    RuleSet(PseudoClassSelector(NestingSelector,PseudoClassName),Block(
+      Declaration(PropertyName,ValueName))),
+    RuleSet(PseudoClassSelector(NestingSelector,PseudoClassName),Block(
+      Declaration(PropertyName,SassVariableName),
+      Declaration(PropertyName,ValueName),
+      Declaration(PropertyName,ValueName))))),
+  Declaration(SassVariableName,NumberLiteral))
+
+# Comments in indented {"dialect": "indented"}
+
+// Nothing
+p
+  /* blah
+     and more comment
+  color: blue
+
+  // More comments
+  display: /* inline block */ none
+
+==>
+
+StyleSheet(
+  LineComment,
+  RuleSet(TagSelector(TagName),Block(
+    Comment,
+    Declaration(PropertyName,ValueName),
+    LineComment,
+    Declaration(PropertyName,Comment,ValueName))))
+
+# Indented mixin {"dialect": "indented"}
+
+=reset-list
+  margin: 0
+  padding: 0
+  list-style: none
+
+=horizontal-list
+  +reset-list
+
+  li
+    display: inline-block
+    margin:
+      left: -2px
+      right: 2em
+
+nav ul
+  +horizontal-list
+
+==>
+
+StyleSheet(
+  MixinStatement(IndentedMixin,ValueName,Block(
+    Declaration(PropertyName,NumberLiteral),
+    Declaration(PropertyName,NumberLiteral),
+    Declaration(PropertyName,ValueName))),
+  MixinStatement(IndentedMixin,ValueName,Block(
+    IncludeStatement(IndentedInclude,ValueName),
+    RuleSet(TagSelector(TagName),Block(
+      Declaration(PropertyName,ValueName),
+      Declaration(PropertyName,Block(
+        Declaration(PropertyName,NumberLiteral(Unit)),
+        Declaration(PropertyName,NumberLiteral(Unit)))))))),
+  RuleSet(DescendantSelector(TagSelector(TagName),TagSelector(TagName)),Block(
+    IncludeStatement(IndentedInclude,ValueName))))

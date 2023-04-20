@@ -1,3 +1,5 @@
+@dialects { indented }
+
 @precedence {
   attribute @left,
   structure @left,
@@ -5,9 +7,9 @@
   valueOp @left
 }
 
-@skip { whitespace | Comment | LineComment }
+@skip { whitespace | Comment | LineComment | blankLine }
 
-@top StyleSheet { (item | Declaration ";")* }
+@top StyleSheet { (item | Declaration semi)* }
 
 @top Styles { blockContent }
 
@@ -38,19 +40,19 @@ RuleSet {
 }
 
 ImportStatement {
-  @specialize[@name=import]<AtKeyword, "@import"> value commaSep<query> ";"
+  @specialize[@name=import]<AtKeyword, "@import"> value commaSep<query> semi
 }
 
 IncludeStatement {
-  @specialize[@name=include]<AtKeyword, "@include"> value (ckw<"using"> callArgList)? (Block | ";")
+  (@specialize[@name=include]<AtKeyword, "@include"> | IndentedInclude) value (ckw<"using"> callArgList)? (Block | semi)
 }
 
 UseStatement {
-  @specialize[@name=use]<AtKeyword, "@use"> value (ckw<"with"> callArgList)? ";"
+  @specialize[@name=use]<AtKeyword, "@use"> value (ckw<"with"> callArgList)? semi
 }
 
 ExtendStatement {
-  @specialize[@name=extend]<AtKeyword, "@extend"> selector ";"
+  @specialize[@name=extend]<AtKeyword, "@extend"> selector semi
 }
 
 RootStatement {
@@ -58,11 +60,11 @@ RootStatement {
 }
 
 ForwardStatement {
-  @specialize[@name=forward]<AtKeyword, "@forward"> value (ckw<"hide" | "show"> commaSep<value>)* ";"
+  @specialize[@name=forward]<AtKeyword, "@forward"> value (ckw<"hide" | "show"> commaSep<value>)* semi
 }
 
 MixinStatement {
-  @specialize[@name=mixin]<AtKeyword, "@mixin" | "@function"> value Block
+  (@specialize[@name=mixin]<AtKeyword, "@mixin" | "@function"> | IndentedMixin) value Block
 }
 
 MediaStatement {
@@ -70,13 +72,13 @@ MediaStatement {
 }
 
 CharsetStatement {
-  @specialize[@name=charset]<AtKeyword, "@charset"> value ";"
+  @specialize[@name=charset]<AtKeyword, "@charset"> value semi
 }
 
 NamespaceStatement {
   @specialize[@name=namespace]<AtKeyword, "@namespace">
   NamespaceName { identifier }?
-  (StringLiteral | CallLiteral) ";"
+  (StringLiteral | CallLiteral) semi
 }
 
 KeyframesStatement {
@@ -110,14 +112,14 @@ WhileStatement {
 }
 
 OutputStatement {
-  ctrlKw<"@debug" | "@warn" | "@error" | "@return"> value ";"
+  ctrlKw<"@debug" | "@warn" | "@error" | "@return"> value semi
 }
 
-AtRule { AtKeyword commaSep<query> (";" | Block) }
+AtRule { AtKeyword commaSep<query> (semi | Block) }
 
-Block { "{" blockContent "}" }
+Block { "{" blockContent "}" | newline indent blockContent dedent }
 
-blockContent { ~item item* (Declaration (";" ~item item* Declaration?)*)? }
+blockContent { ~item item* (Declaration (semi ~item item* Declaration?)*)? }
 
 selector {
   UniversalSelector |
@@ -204,6 +206,18 @@ ctrlKw<term> { @specialize[@name=ControlKeyword]<AtKeyword, term> }
 
 Interpolation { InterpolationStart value (InterpolationContinue value)* InterpolationEnd }
 
+semi { ";" | newline | eof }
+
+@skip {} {
+  blankLine {
+    blankLineStart (whitespace | Comment | LineComment)* newline
+  }
+}
+
+@context trackIndent from "./tokens.js"
+
+@external tokens indentation from "./tokens" { indent, dedent }
+
 @external tokens descendant from "./tokens" {
   descendantOp
 }
@@ -220,6 +234,12 @@ Interpolation { InterpolationStart value (InterpolationContinue value)* Interpol
   VariableName,
   InterpolationStart
 }
+
+@external tokens spaces from "./tokens" { newline, blankLineStart, eof, whitespace }
+
+@external tokens comments from "./tokens" { LineComment, Comment }
+
+@external tokens indentedMixins from "./tokens" { IndentedMixin, IndentedInclude }
 
 @tokens {
   UniversalSelector { "*" }
@@ -244,23 +264,9 @@ Interpolation { InterpolationStart value (InterpolationContinue value)* Interpol
   Global { "!global" }
   Default { "!default" }
 
-  whitespace { @whitespace+ }
-
-  Comment { "/*" commentRest }
-
-  commentRest { ![*] commentRest | "*" commentAfterStar }
-
-  commentAfterStar { "/" | "*" commentAfterStar | ![/*] commentRest }
-
-  LineComment { "//" ![\n]* }
-
-  @precedence { Comment, LineComment, BinOp }
-
   hexDigit { @digit | $[a-fA-F] }
 
   ParenthesizedContent { !['")] ![)]+ }
-
-  @precedence { whitespace, ParenthesizedContent, Comment, LineComment }
 
   ColorLiteral {
     "#" hexDigit hexDigit hexDigit (hexDigit (hexDigit hexDigit (hexDigit hexDigit)?)?)?

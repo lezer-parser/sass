@@ -20,7 +20,7 @@ export const cssHighlighting = styleTags({
   SassVariableName: t.special(t.variableName),
   Callee: t.operatorKeyword,
   Unit: t.unit,
-  "UniversalSelector NestingSelector": t.definitionOperator,
+  "UniversalSelector NestingSelector IndentedMixin IndentedInclude": t.definitionOperator,
   MatchOp: t.compareOperator,
   "ChildOp SiblingOp, LogicOp": t.logicOperator,
   BinOp: t.arithmeticOperator,
