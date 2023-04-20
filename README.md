@@ -1,6 +1,6 @@
-# @lezer/css
+# @lezer/scss
 
-This is a CSS grammar for the
+This is an SCSS grammar for the
 [lezer](https://lezer.codemirror.net/) parser system.
 
 The code is licensed under an MIT license.
