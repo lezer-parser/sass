@@ -222,7 +222,7 @@ semi { ";" | newline | eof }
   descendantOp
 }
 
-@external tokens interpolationEnd from "./tokens" { InterpolationEnd, InterpolationContinue }
+@external tokens interpolationEnd from "./tokens" { InterpolationEnd[openedBy=InterpolationStart], InterpolationContinue }
 
 @external tokens unitToken from "./tokens" {
   Unit
@@ -232,7 +232,7 @@ semi { ";" | newline | eof }
   callee,
   identifier,
   VariableName,
-  InterpolationStart
+  InterpolationStart[openedBy=InterpolationEnd]
 }
 
 @external tokens spaces from "./tokens" { newline, blankLineStart, eof, whitespace }
