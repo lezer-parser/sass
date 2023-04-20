@@ -58,10 +58,10 @@ StyleSheet(
 ==>
 
 StyleSheet(KeyframesStatement(keyframes,KeyframeName,KeyframeList(
-  from,Block(Declaration(PropertyName,NumberLiteral(Unit))),
+  Keyword,Block(Declaration(PropertyName,NumberLiteral(Unit))),
   NumberLiteral(Unit),Block(Declaration(PropertyName,NumberLiteral(Unit),Important)),
   Comment,
-  to,Block(Declaration(PropertyName,NumberLiteral(Unit))))))
+  Keyword,Block(Declaration(PropertyName,NumberLiteral(Unit))))))
 
 # Media statements
 
@@ -76,8 +76,8 @@ StyleSheet(
   MediaStatement(media,BinaryQuery(BinaryQuery(KeywordQuery,LogicOp,FeatureQuery(FeatureName,NumberLiteral(Unit))),LogicOp,
     FeatureQuery(FeatureName,ValueName)),Block),
   MediaStatement(media,FeatureQuery(FeatureName,NumberLiteral(Unit)),BinaryQuery(KeywordQuery,LogicOp,FeatureQuery(FeatureName,ValueName)),Block),
-  MediaStatement(media,UnaryQuery(UnaryQueryOp,BinaryQuery(KeywordQuery,LogicOp,ParenthesizedQuery(KeywordQuery))),Block),
-  MediaStatement(media,UnaryQuery(UnaryQueryOp,KeywordQuery),Block))
+  MediaStatement(media,UnaryQuery(LogicOp,BinaryQuery(KeywordQuery,LogicOp,ParenthesizedQuery(KeywordQuery))),Block),
+  MediaStatement(media,UnaryQuery(LogicOp,KeywordQuery),Block))
 
 # Supports statements
 
@@ -93,9 +93,9 @@ StyleSheet(
 StyleSheet(
   SupportsStatement(supports,FeatureQuery(FeatureName,ValueName),Block(RuleSet(TagSelector(TagName),Block(Declaration(PropertyName,ValueName))))),
   SupportsStatement(supports,BinaryQuery(FeatureQuery(FeatureName,ValueName),LogicOp,FeatureQuery(FeatureName,ValueName)),Block),
-  SupportsStatement(supports,UnaryQuery(UnaryQueryOp,ParenthesizedQuery(
+  SupportsStatement(supports,UnaryQuery(LogicOp,ParenthesizedQuery(
     BinaryQuery(FeatureQuery(FeatureName,ValueName),LogicOp,FeatureQuery(FeatureName,ValueName)))),Block),
-  SupportsStatement(supports,UnaryQuery(UnaryQueryOp,SelectorQuery(selector,PseudoClassSelector(":",PseudoClassName,ArgList(TagSelector(TagName),TagSelector(TagName))))),Block))
+  SupportsStatement(supports,UnaryQuery(LogicOp,SelectorQuery(selector,PseudoClassSelector(":",PseudoClassName,ArgList(TagSelector(TagName),TagSelector(TagName))))),Block))
 
 # Charset statements
 

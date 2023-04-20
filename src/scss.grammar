@@ -1,23 +1,35 @@
 @precedence {
   attribute @left,
   structure @left,
+  namespaceDot @left,
   valueOp @left
 }
 
-@skip { whitespace | Comment }
+@skip { whitespace | Comment | LineComment }
 
-@top StyleSheet { item* }
+@top StyleSheet { (item | Declaration ";")* }
 
 @top Styles { blockContent }
 
 item {
   RuleSet |
   ImportStatement |
+  IncludeStatement |
+  MixinStatement |
+  UseStatement |
+  ExtendStatement |
+  RootStatement |
+  ForwardStatement |
   MediaStatement |
   CharsetStatement |
   NamespaceStatement |
   KeyframesStatement |
   SupportsStatement |
+  IfStatement |
+  ForStatement |
+  EachStatement |
+  WhileStatement |
+  OutputStatement |
   AtRule
 }
 
@@ -27,6 +39,30 @@ RuleSet {
 
 ImportStatement {
   @specialize[@name=import]<AtKeyword, "@import"> value commaSep<query> ";"
+}
+
+IncludeStatement {
+  @specialize[@name=include]<AtKeyword, "@include"> value (ckw<"using"> callArgList)? (Block | ";")
+}
+
+UseStatement {
+  @specialize[@name=use]<AtKeyword, "@use"> value (ckw<"with"> callArgList)? ";"
+}
+
+ExtendStatement {
+  @specialize[@name=extend]<AtKeyword, "@extend"> selector ";"
+}
+
+RootStatement {
+  @specialize[@name="at-root"]<AtKeyword, "@at-root"> selector? ("(" ckw<"with" | "without"> ":" query ")")? Block
+}
+
+ForwardStatement {
+  @specialize[@name=forward]<AtKeyword, "@forward"> value (ckw<"hide" | "show"> commaSep<value>)* ";"
+}
+
+MixinStatement {
+  @specialize[@name=mixin]<AtKeyword, "@mixin" | "@function"> value Block
 }
 
 MediaStatement {
@@ -57,6 +93,26 @@ SupportsStatement {
   @specialize[@name=supports]<AtKeyword, "@supports"> query Block
 }
 
+IfStatement {
+  ctrlKw<"@if"> value Block (ctrlKw<"@else"> ckw<"if"> value Block)* (ctrlKw<"@else"> Block)?
+}
+
+ForStatement {
+  ctrlKw<"@for"> SassVariableName kw<"from"> value (kw<"to"> | ckw<"through">) value Block
+}
+
+EachStatement {
+  ctrlKw<"@each"> commaSep<SassVariableName> ckw<"in"> value Block
+}
+
+WhileStatement {
+  ctrlKw<"@while"> value Block
+}
+
+OutputStatement {
+  ctrlKw<"@debug" | "@warn" | "@error" | "@return"> value ";"
+}
+
 AtRule { AtKeyword commaSep<query> (";" | Block) }
 
 Block { "{" blockContent "}" }
@@ -67,6 +123,7 @@ selector {
   UniversalSelector |
   TagSelector { ~item TagName { identifier ~item } } |
   NestingSelector |
+  Interpolation ~item |
   ClassSelector { selector? !attribute "." ClassName { identifier } } |
   PseudoClassSelector {
     selector? !attribute (":" | "::") (
@@ -89,30 +146,41 @@ NumberLiteral {
   numberLiteralInner Unit?
 }
 
+callArgList { ArgList<SassVariableName ":" value+ | value+ "..."?> }
+
 ArgList<content> { "(" commaSep<content> ")" }
 
+PropertyName { identifier ~item }
+
 Declaration {
-  (PropertyName { identifier ~item } | VariableName)
-  ":" value (","? value)* Important?
+  (PropertyName | Interpolation ~item | VariableName | SassVariableName)
+  ":" (Block | value (","? value)* (Important | Global | Default)?)
 }
 
 query {
   KeywordQuery { identifier } |
+  SassVariableName |
+  Interpolation |
   FeatureQuery { "(" FeatureName { identifier } ":" value+ ")" } |
   BinaryQuery { query !valueOp LogicOp query } |
-  UnaryQuery { @specialize[@name=UnaryQueryOp]<identifier, "not" | "only"> query } |
+  UnaryQuery { @specialize[@name=LogicOp]<identifier, "not" | "only"> query } |
   ParenthesizedQuery { "(" query ")" } |
   SelectorQuery { @specialize[@name=selector]<callee, "selector"> "(" selector ")" }
 }
 
 value {
   VariableName |
+  SassVariableName |
+  NestingSelector |
+  Interpolation |
   ValueName { identifier } |
   ParenthesizedValue { "(" value ")" } |
   ColorLiteral |
   NumberLiteral |
   StringLiteral |
-  BinaryExpression { value !valueOp BinOp value } |
+  BinaryExpression { value !valueOp (BinOp | LogicOp) value } |
+  UnaryExpression { @specialize[@name=LogicOp]<identifier, "not"> value } |
+  NamespacedValue { value !namespaceDot "." value } |
   CallExpression |
   CallLiteral
 }
@@ -123,16 +191,24 @@ CallLiteral {
 }
 
 CallExpression {
-  Callee { callee } ArgList<value+>
+  Callee { callee } callArgList
 }
 
-commaSep<value> { "" | value ("," value)* }
+commaSep<value> { "" | value ("," value?)* }
 
-kw<term> { @specialize[@name={term}]<identifier, term> }
+kw<term> { @specialize[@name=Keyword]<identifier, term> }
+
+ckw<term> { @extend[@name=Keyword]<identifier, term> }
+
+ctrlKw<term> { @specialize[@name=ControlKeyword]<AtKeyword, term> }
+
+Interpolation { InterpolationStart value (InterpolationContinue value)* InterpolationEnd }
 
 @external tokens descendant from "./tokens" {
   descendantOp
 }
+
+@external tokens interpolationEnd from "./tokens" { InterpolationEnd, InterpolationContinue }
 
 @external tokens unitToken from "./tokens" {
   Unit
@@ -141,13 +217,16 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 @external tokens identifiers from "./tokens" {
   callee,
   identifier,
-  VariableName
+  VariableName,
+  InterpolationStart
 }
 
 @tokens {
   UniversalSelector { "*" }
 
   NestingSelector { "&" }
+
+  SassVariableName { "$" (@asciiLetter | @digit | "-" | "_")+ }
 
   AtKeyword { "@" @asciiLetter (@asciiLetter | @digit | "-")* }
 
@@ -159,9 +238,11 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 
   LogicOp { "and" | "or" }
 
-  BinOp { $[+\-*/] }
+  BinOp { $[+\-*/<>%] | $[=<>!] "="}
 
   Important { "!important" }
+  Global { "!global" }
+  Default { "!default" }
 
   whitespace { @whitespace+ }
 
@@ -171,13 +252,15 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 
   commentAfterStar { "/" | "*" commentAfterStar | ![/*] commentRest }
 
-  @precedence { Comment, BinOp }
+  LineComment { "//" ![\n]* }
+
+  @precedence { Comment, LineComment, BinOp }
 
   hexDigit { @digit | $[a-fA-F] }
 
   ParenthesizedContent { !['")] ![)]+ }
 
-  @precedence { whitespace, ParenthesizedContent, Comment }
+  @precedence { whitespace, ParenthesizedContent, Comment, LineComment }
 
   ColorLiteral {
     "#" hexDigit hexDigit hexDigit (hexDigit (hexDigit hexDigit (hexDigit hexDigit)?)?)?
@@ -185,11 +268,11 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
 
   numberLiteralInner { ("+" | "-")? (@digit+ ("." @digit*)? | "." @digit+) (("e" | "E") ("+" | "-")? @digit+)? }
 
-  @precedence { numberLiteralInner, BinOp, SiblingOp }
+  @precedence { numberLiteralInner, ".", BinOp, SiblingOp }
 
   StringLiteral { "\"" (!["\n\\] | "\\" _)* "\"" | "'" (!['\n\\] | "\\" _)* "'" }
 
-  "#"
+  "#" "#{" "..."
 
   ":" "::" ";" ","
 
