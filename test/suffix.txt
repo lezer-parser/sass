@@ -1,0 +1,13 @@
+# Adding Suffixes
+
+.a {
+  &__b {}
+}
+
+==>
+
+StyleSheet(
+  RuleSet(ClassSelector(ClassName),Block(
+    RuleSet(SuffixSelector(NestingSelector,SuffixName),Block)
+  ))
+)

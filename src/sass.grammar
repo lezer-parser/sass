@@ -125,6 +125,7 @@ selector {
   UniversalSelector |
   TagSelector { ~item TagName { identifier ~item } } |
   NestingSelector |
+  SuffixSelector { selector? !attribute NestingSelector SuffixName { identifier } } |
   Interpolation ~item |
   ClassSelector { selector? !attribute "." ClassName { identifier } } |
   PseudoClassSelector {
