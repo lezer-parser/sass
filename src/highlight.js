@@ -7,7 +7,7 @@ export const cssHighlighting = styleTags({
   NamespaceName: t.namespace,
   KeyframeName: t.labelName,
   TagName: t.tagName,
-  ClassName: t.className,
+  "ClassName Suffix": t.className,
   PseudoClassName: t.constant(t.className),
   IdName: t.labelName,
   "FeatureName PropertyName": t.propertyName,

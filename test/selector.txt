@@ -128,3 +128,15 @@ a:not(:hover) {}
 StyleSheet(
   RuleSet(PseudoClassSelector(TagSelector(TagName),":",PseudoClassName,ArgList(PseudoClassSelector(":",PseudoClassName))),Block),
   RuleSet(PseudoClassSelector(ClassSelector(ClassName),":",PseudoClassName,ArgList(ChildSelector(TagSelector(TagName),ChildOp,ClassSelector(ClassName)))),Block))
+
+# Suffixed Outer
+
+.foo {
+  &__bar {
+  }
+}
+
+==>
+
+StyleSheet(RuleSet(ClassSelector(ClassName),Block(
+  RuleSet(SuffixedSelector(NestingSelector,Suffix),Block))))
