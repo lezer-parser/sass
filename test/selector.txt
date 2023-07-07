@@ -140,3 +140,16 @@ StyleSheet(
 
 StyleSheet(RuleSet(ClassSelector(ClassName),Block(
   RuleSet(SuffixedSelector(NestingSelector,Suffix),Block))))
+
+
+# NestingSelector after selector
+
+.foo {
+  .bar & {
+  }
+}
+
+==>
+
+StyleSheet(RuleSet(ClassSelector(ClassName),Block(
+  RuleSet(DescendantSelector(ClassSelector(ClassName),NestingSelector),Block))))
