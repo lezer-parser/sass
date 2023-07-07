@@ -1,3 +1,11 @@
+## 1.0.3 (2023-07-07)
+
+### Bug fixes
+
+Properly parse suffixed nested selectors.
+
+Allow the nesting `&` selector to appear as a descendant selector.
+
 ## 1.0.2 (2023-07-03)
 
 ### Bug fixes
