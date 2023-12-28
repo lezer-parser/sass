@@ -238,7 +238,7 @@ semi { ";" | newline | eof }
 
 @external tokens spaces from "./tokens" { newline, blankLineStart, eof, whitespace }
 
-@external tokens comments from "./tokens" { LineComment, Comment }
+@external tokens comments from "./tokens" { LineComment[isolate], Comment[isolate] }
 
 @external tokens indentedMixins from "./tokens" { IndentedMixin, IndentedInclude }
 
@@ -277,7 +277,7 @@ semi { ";" | newline | eof }
 
   @precedence { numberLiteralInner, ".", BinOp, SiblingOp }
 
-  StringLiteral { "\"" (!["\n\\] | "\\" _)* "\"" | "'" (!['\n\\] | "\\" _)* "'" }
+  StringLiteral[isolate] { "\"" (!["\n\\] | "\\" _)* "\"" | "'" (!['\n\\] | "\\" _)* "'" }
 
   "#" "#{" "..."
 
