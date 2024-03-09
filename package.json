@@ -1,6 +1,6 @@
 {
   "name": "@lezer/sass",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Lezer-based Sass/SCSS grammar",
   "main": "dist/index.cjs",
   "type": "module",

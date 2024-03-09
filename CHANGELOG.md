@@ -1,3 +1,9 @@
+## 1.0.5 (2024-03-09)
+
+### Bug fixes
+
+Add support for `as` syntax in `@forward` and `@use`.
+
 ## 1.0.4 (2023-12-28)
 
 ### Bug fixes
