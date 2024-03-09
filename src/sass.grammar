@@ -48,7 +48,7 @@ IncludeStatement {
 }
 
 UseStatement {
-  @specialize[@name=use]<AtKeyword, "@use"> value (ckw<"with"> callArgList)? semi
+  @specialize[@name=use]<AtKeyword, "@use"> value (ckw<"as"> (ValueName | Star))? (ckw<"with"> callArgList)? semi
 }
 
 ExtendStatement {
@@ -60,7 +60,10 @@ RootStatement {
 }
 
 ForwardStatement {
-  @specialize[@name=forward]<AtKeyword, "@forward"> value (ckw<"hide" | "show"> commaSep<value>)* semi
+  @specialize[@name=forward]<AtKeyword, "@forward"> value
+  (ckw<"as"> ValueName Star)?
+  (ckw<"hide" | "show"> commaSep<value>)*
+  semi
 }
 
 MixinStatement {
@@ -122,7 +125,7 @@ Block { "{" blockContent "}" | newline indent blockContent dedent }
 blockContent { ~item item* (Declaration (semi ~item item* Declaration?)*)? }
 
 selector {
-  UniversalSelector |
+  UniversalSelector { "*" } |
   TagSelector { ~item TagName { identifier ~item } } |
   NestingSelector |
   SuffixedSelector { NestingSelector Suffix { identifier } } |
@@ -176,7 +179,7 @@ value {
   SassVariableName |
   NestingSelector |
   Interpolation |
-  ValueName { identifier } |
+  ValueName |
   ParenthesizedValue { "(" value ")" } |
   ColorLiteral |
   NumberLiteral |
@@ -187,6 +190,8 @@ value {
   CallExpression |
   CallLiteral
 }
+
+ValueName { identifier }
 
 CallLiteral {
   @specialize[@name=CallTag]<callee, "url" | "url-prefix" | "domain" | "regexp">
@@ -242,9 +247,9 @@ semi { ";" | newline | eof }
 
 @external tokens indentedMixins from "./tokens" { IndentedMixin, IndentedInclude }
 
-@tokens {
-  UniversalSelector { "*" }
+Star { "*" }
 
+@tokens {
   NestingSelector { "&" }
 
   SassVariableName { "$" (@asciiLetter | @digit | "-" | "_")+ }

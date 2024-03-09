@@ -72,10 +72,13 @@ StyleSheet(
 # Forward
 
 @forward "src/list" hide list-reset, $horizontal-list-gap;
+@forward "module" as m-*;
 
 ==>
 
-StyleSheet(ForwardStatement(forward,StringLiteral,Keyword,ValueName,SassVariableName))
+StyleSheet(
+  ForwardStatement(forward,StringLiteral,Keyword,ValueName,SassVariableName),
+  ForwardStatement(forward,StringLiteral,Keyword,ValueName,Star))
 
 # At-root
 
@@ -264,3 +267,23 @@ StyleSheet(
         Declaration(PropertyName,NumberLiteral(Unit)))))))),
   RuleSet(DescendantSelector(TagSelector(TagName),TagSelector(TagName)),Block(
     IncludeStatement(IndentedInclude,ValueName))))
+
+# Use
+
+@use 'foundation/code';
+@use "module" as m;
+@use "module" as *;
+@use 'library' with (
+  $black: #222,
+  $border-radius: 0.1rem
+);
+
+==>
+
+StyleSheet(
+  UseStatement(use,StringLiteral),
+  UseStatement(use,StringLiteral,Keyword,ValueName),
+  UseStatement(use,StringLiteral,Keyword,Star),
+  UseStatement(use,StringLiteral,Keyword,ArgList(
+    SassVariableName, ColorLiteral,
+    SassVariableName,NumberLiteral(Unit))))
