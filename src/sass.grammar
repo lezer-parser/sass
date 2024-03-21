@@ -160,7 +160,11 @@ PropertyName { identifier ~item }
 
 Declaration {
   (PropertyName | Interpolation ~item | VariableName | SassVariableName)
-  ":" (Block | value (","? value)* (Important | Global | Default)?)
+  ":" (Block | Map | value (","? value)* (Important | Global | Default)?)
+}
+
+Map {
+  "(" (StringLiteral ":" (value | Map)","?)* ")"
 }
 
 query {
