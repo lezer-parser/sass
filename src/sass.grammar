@@ -141,7 +141,8 @@ selector {
   AttributeSelector { selector? !attribute "[" AttributeName { identifier } (MatchOp value)? "]" } |
   ChildSelector { selector !structure ChildOp selector } |
   DescendantSelector { selector !structure descendantOp selector } |
-  SiblingSelector { selector !structure SiblingOp selector }
+  SiblingSelector { selector !structure SiblingOp selector } |
+  PlaceholderSelector { "%" ClassName { identifier } }
 }
 
 pseudoClassWithArg {
