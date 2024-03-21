@@ -1,3 +1,11 @@
+## 1.0.6 (2024-03-21)
+
+### Bug fixes
+
+Properly parse placeholder selectors. Add map declarations to the grammar
+
+Add support for parenthesized maps.
+
 ## 1.0.5 (2024-03-09)
 
 ### Bug fixes
