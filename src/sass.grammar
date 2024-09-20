@@ -122,7 +122,7 @@ AtRule { AtKeyword commaSep<query> (semi | Block) }
 
 Block { "{" blockContent "}" | newline indent blockContent dedent }
 
-blockContent { ~item item* (Declaration (semi ~item item* Declaration?)*)? }
+blockContent { ~item item* (Declaration (nonEofSemi ~item item* Declaration?)*)? }
 
 selector {
   UniversalSelector { "*" } |
@@ -218,6 +218,8 @@ ctrlKw<term> { @specialize[@name=ControlKeyword]<AtKeyword, term> }
 Interpolation { InterpolationStart value (InterpolationContinue value)* InterpolationEnd }
 
 semi { ";" | newline | eof }
+
+nonEofSemi { ";" | newline }
 
 @skip {} {
   blankLine {
