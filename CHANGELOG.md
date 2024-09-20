@@ -1,3 +1,9 @@
+## 1.0.7 (2024-09-20)
+
+### Bug fixes
+
+Fix a bug that could cause the parser to get stuck, endlessly parsing empty statments, at the end of some types of inputs with unclosed blocks.
+
 ## 1.0.6 (2024-03-21)
 
 ### Bug fixes
