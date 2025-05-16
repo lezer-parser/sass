@@ -261,7 +261,7 @@ Star { "*" }
 
   SassVariableName { "$" (@asciiLetter | @digit | "-" | "_")+ }
 
-  AtKeyword { "@" @asciiLetter (@asciiLetter | @digit | "-")* }
+  AtKeyword { "@" "-"? @asciiLetter (@asciiLetter | @digit | "-")* }
 
   MatchOp { $[~^|*$]? "=" }
 
