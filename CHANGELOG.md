@@ -1,3 +1,31 @@
+## 1.1.0 (2025-05-16)
+
+### Bug fixes
+
+Fix parsing of  selectors in descendant positions.
+
+Allow @ keywords to start with a dash, since prefixed ones exist.
+
+Emit a node for class selector dots.
+
+Allow  values to be empty.
+
+Follow the standard, allowing digits in unit identifiers.
+
+Correctly parse properties with a space before the colon.
+
+Add support for bracketed grid line names.
+
+Make keyframe selector parsing more flexible to support timeline ranges.
+
+Allow multiple comma-separated keyframe selectors per keyframe.
+
+### New features
+
+Add support for range queries.
+
+`@import` statements now support  syntax.
+
 ## 1.0.7 (2024-09-20)
 
 ### Bug fixes
