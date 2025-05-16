@@ -3,6 +3,7 @@
 @precedence {
   attribute @left,
   structure @left,
+  valueCompareOp,
   namespaceDot @left,
   valueOp @left
 }
@@ -172,12 +173,20 @@ query {
   KeywordQuery { identifier } |
   SassVariableName |
   Interpolation |
-  FeatureQuery { "(" FeatureName { identifier } ":" value+ ")" } |
+  FeatureQuery { "(" FeatureName ":" value+ ")" } |
   BinaryQuery { query !valueOp LogicOp query } |
+  ComparisonQuery {
+    "("
+    (queryValue | FeatureName) !valueCompareOp CompareOp (queryValue | FeatureName)
+    (!valueCompareOp CompareOp (queryValue | FeatureName))?
+    ")"
+  } |
   UnaryQuery { @specialize[@name=LogicOp]<identifier, "not" | "only"> query } |
   ParenthesizedQuery { "(" query ")" } |
   SelectorQuery { @specialize[@name=selector]<callee, "selector"> "(" selector ")" }
 }
+
+FeatureName { identifier }
 
 value {
   VariableName |
@@ -192,6 +201,15 @@ value {
   BinaryExpression { value !valueOp (BinOp | LogicOp) value } |
   UnaryExpression { @specialize[@name=LogicOp]<identifier, "not"> value } |
   NamespacedValue { value !namespaceDot "." value } |
+  CallExpression |
+  CallLiteral
+}
+
+queryValue {
+  VariableName |
+  ColorLiteral |
+  NumberLiteral |
+  StringLiteral |
   CallExpression |
   CallLiteral
 }
@@ -266,6 +284,8 @@ Star { "*" }
   MatchOp { $[~^|*$]? "=" }
 
   ChildOp { ">" ">"? }
+
+  CompareOp { $[<>] "="? | "=" }
 
   SiblingOp { "~" | "+" }
 
