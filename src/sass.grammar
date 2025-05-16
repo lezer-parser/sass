@@ -208,7 +208,8 @@ value {
   UnaryExpression { @specialize[@name=LogicOp]<identifier, "not"> value } |
   NamespacedValue { value !namespaceDot "." value } |
   CallExpression |
-  CallLiteral
+  CallLiteral |
+  LineNames { "[" LineName { identifier }* "]" }
 }
 
 queryValue {
