@@ -2,7 +2,7 @@
    expressed by Lezer's built-in tokenizer. */
 
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
-import {Dialect_indented, callee, identifier, VariableName, descendantOp, Unit,
+import {Dialect_indented, callee, identifier, VariableName, queryIdentifier, descendantOp, Unit,
         blankLineStart, newline, whitespace, eof, indent, dedent, LineComment, Comment,
         IndentedMixin, IndentedInclude,
         InterpolationStart, InterpolationEnd, InterpolationContinue} from "./parser.terms.js"
@@ -146,8 +146,11 @@ export const identifiers = new ExternalTokenizer((input, stack) => {
       input.acceptToken(InterpolationStart, 2)
       break
     } else {
-      if (inside)
-        input.acceptToken(next == parenL ? callee : dashes == 2 && stack.canShift(VariableName) ? VariableName : identifier)
+      if (inside) input.acceptToken(
+        dashes == 2 && stack.canShift(VariableName) ? VariableName
+          : stack.canShift(queryIdentifier) ? queryIdentifier
+          : next == parenL ? callee
+          : identifier)
       break
     }
   }

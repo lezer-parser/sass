@@ -5,7 +5,8 @@
   structure @left,
   valueCompareOp,
   namespaceDot @left,
-  valueOp @left
+  valueOp @left,
+  layerName
 }
 
 @skip { whitespace | Comment | LineComment | blankLine }
@@ -41,8 +42,13 @@ RuleSet {
 }
 
 ImportStatement {
-  @specialize[@name=import]<AtKeyword, "@import"> value commaSep<query> semi
+  @specialize[@name=import]<AtKeyword, "@import">
+  value
+  Layer { @specialize[@name=layer]<queryIdentifier, "layer"> (!layerName "(" LayerName ("." LayerName)* ")")? }?
+  commaSep<query> semi
 }
+
+LayerName { identifier }
 
 IncludeStatement {
   (@specialize[@name=include]<AtKeyword, "@include"> | IndentedInclude) value (ckw<"using"> callArgList)? (Block | semi)
@@ -170,7 +176,7 @@ Map {
 }
 
 query {
-  KeywordQuery { identifier } |
+  KeywordQuery { queryIdentifier } |
   SassVariableName |
   Interpolation |
   FeatureQuery { "(" FeatureName ":" value+ ")" } |
@@ -181,12 +187,12 @@ query {
     (!valueCompareOp CompareOp (queryValue | FeatureName))?
     ")"
   } |
-  UnaryQuery { @specialize[@name=LogicOp]<identifier, "not" | "only"> query } |
+  UnaryQuery { @specialize[@name=LogicOp]<queryIdentifier, "not" | "only"> query } |
   ParenthesizedQuery { "(" query ")" } |
-  SelectorQuery { @specialize[@name=selector]<callee, "selector"> "(" selector ")" }
+  SelectorQuery { @specialize[@name=selector]<queryIdentifier, "selector"> "(" selector ")" }
 }
 
-FeatureName { identifier }
+FeatureName { queryIdentifier }
 
 value {
   VariableName |
@@ -263,6 +269,7 @@ nonEofSemi { ";" | newline }
   callee,
   identifier,
   VariableName,
+  queryIdentifier,
   InterpolationStart[openedBy=InterpolationEnd]
 }
 
