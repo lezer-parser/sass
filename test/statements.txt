@@ -58,10 +58,10 @@ StyleSheet(
 ==>
 
 StyleSheet(KeyframesStatement(keyframes,KeyframeName,KeyframeList(
-  Keyword,Block(Declaration(PropertyName,NumberLiteral(Unit))),
-  NumberLiteral(Unit),Block(Declaration(PropertyName,NumberLiteral(Unit),Important)),
+  KeyframeSelector(KeyframeRangeName),Block(Declaration(PropertyName,NumberLiteral(Unit))),
+  KeyframeSelector(NumberLiteral(Unit)),Block(Declaration(PropertyName,NumberLiteral(Unit),Important)),
   Comment,
-  Keyword,Block(Declaration(PropertyName,NumberLiteral(Unit))))))
+  KeyframeSelector(KeyframeRangeName),Block(Declaration(PropertyName,NumberLiteral(Unit))))))
 
 # Media statements
 

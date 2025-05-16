@@ -93,12 +93,17 @@ NamespaceStatement {
 
 KeyframesStatement {
   @specialize[@name=keyframes]<AtKeyword, "@keyframes">
-  KeyframeName { identifier }
+  KeyframeName { identifier | StringLiteral }
   KeyframeList
 }
 
+KeyframeSelector {
+  KeyframeRangeName { identifier } NumberLiteral? |
+  NumberLiteral
+}
+
 KeyframeList {
-  "{" ((kw<"from"> | kw<"to"> | NumberLiteral) Block)* "}"
+  "{" (KeyframeSelector ("," KeyframeSelector)* Block)* "}"
 }
 
 SupportsStatement {
@@ -110,7 +115,7 @@ IfStatement {
 }
 
 ForStatement {
-  ctrlKw<"@for"> SassVariableName kw<"from"> value (kw<"to"> | ckw<"through">) value Block
+  ctrlKw<"@for"> SassVariableName ckw<"from"> value (ckw<"to"> | ckw<"through">) value Block
 }
 
 EachStatement {
@@ -233,8 +238,6 @@ CallExpression {
 }
 
 commaSep<value> { "" | value ("," value?)* }
-
-kw<term> { @specialize[@name=Keyword]<identifier, term> }
 
 ckw<term> { @extend[@name=Keyword]<identifier, term> }
 
