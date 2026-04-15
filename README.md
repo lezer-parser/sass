@@ -1,3 +1,5 @@
+**This repository has moved to https://code.haverbeke.berlin/lezer/sass**
+
 # @lezer/sass
 
 This is a Sass/SCSS grammar for the
